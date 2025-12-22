@@ -42,6 +42,7 @@ If you prefer to build manually:
    ```
    java -jar target/minecraft-1.3.01-ultimate-edition.jar
    ```
+   (or use start_minecraft.bat and i prefer using .bat file)
 
 ### Project Structure
 - `minecraft/` - Source code directory
