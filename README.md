@@ -28,8 +28,7 @@ Commit your changes: Commit your changes with a clear and descriptive message.
 git commit -m "Add some amazing feature"
 ```
 Push to your fork: Push your branch to your forked repository on GitHub.
-
-Bash
-
+```
 git push origin feature/amazing-feature
+```
 Submit a Pull Request: Go to the original repository on GitHub and you will see a prompt to compare and create a Pull Request. Click it, describe your changes, and submit!
