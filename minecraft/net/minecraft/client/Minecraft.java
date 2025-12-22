@@ -6,7 +6,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowSizeCallback; // Dodany import
+import org.lwjgl.glfw.GLFWWindowSizeCallback; // Added import
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
@@ -71,14 +71,14 @@ public abstract class Minecraft
     public void startGame() throws Exception
     {
         try {
-            System.out.println("Inicjalizacja GLFW...");
+            System.out.println("Initializing GLFW...");
             if (!GLFW.glfwInit()) {
-                throw new RuntimeException("Nie mozna zainicjalizowac GLFW");
+                throw new RuntimeException("Unable to initialize GLFW");
             }
             
             GLFW.glfwDefaultWindowHints();
             GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-            // FIX: Zmiana na TRUE, żeby dało się zmieniać rozmiar okna
+            // FIX: Changed to TRUE to allow window resizing
             GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
             
             // OpenGL 4.6 Compatibility Profile
@@ -89,7 +89,7 @@ public abstract class Minecraft
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_FALSE);
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_DEBUG, GLFW.GLFW_TRUE);
             
-            System.out.println("Tworzenie okna...");
+            System.out.println("Creating window...");
         
         if(fullscreen)
         {
@@ -108,51 +108,51 @@ public abstract class Minecraft
             throw new RuntimeException("Failed to create window");
         }
 
-        // --- FIX: Callbacki do zmiany rozmiaru i klawiatury ---
+        // --- FIX: Callbacks for resizing and keyboard ---
         
-        // 1. Obsługa zmiany rozmiaru okna
+        // 1. Window resize handling
         GLFW.glfwSetWindowSizeCallback(window, (windowHandle, width, height) -> {
             this.displayWidth = width;
             this.displayHeight = height;
             this.resize(width, height);
         });
 
-        // 2. Inicjalizacja kodów klawiszy (mapowanie GLFW -> Minecraft)
+        // 2. Key code initialization (GLFW -> Minecraft mapping)
         initKeyCodes();
 
-        // 3. Obsługa wciskania klawiszy (KeyCallback)
+        // 3. Key press handling (KeyCallback)
         GLFW.glfwSetKeyCallback(window, (windowHandle, key, scancode, action, mods) -> {
-            // Przekazujemy zdarzenia do KeyboardHelpera
-            // Musisz upewnić się, że Twój KeyboardHelper ma metodę add/addEvent
+            // Forward events to KeyboardHelper
+            // You must ensure your KeyboardHelper has an add/addEvent method
             if (key >= 0 && key < keyCodes.length) {
                  int minecraftKey = keyCodes[key];
                  boolean state = (action != GLFW.GLFW_RELEASE);
                  
-                 // Przekaż raw state do helpera (żeby działało isKeyDown)
+                 // Pass raw state to helper (for isKeyDown to work)
                  KeyboardHelper.setKeyState(minecraftKey, state); 
                  
-                 // Dodaj zdarzenie do kolejki (żeby działało .next())
+                 // Add event to queue (for .next() to work)
                  if (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_RELEASE || action == GLFW.GLFW_REPEAT) {
                      KeyboardHelper.addEvent(minecraftKey, state); 
                  }
             }
         });
 
-        // 4. Obsługa wpisywania tekstu (CharCallback) - TO NAPRAWI SEEDY I NAZWY
+        // 4. Text input handling (CharCallback) - THIS FIXES SEEDS AND NAMES
         GLFW.glfwSetCharCallback(window, (windowHandle, codepoint) -> {
-            // Przekazujemy wpisany znak do KeyboardHelpera
+            // Forward typed character to KeyboardHelper
             KeyboardHelper.addCharEvent((char)codepoint);
         });
 
         // -----------------------------------------------------
         
-        System.out.println("Inicjalizacja kontekstu OpenGL...");
+        System.out.println("Initializing OpenGL context...");
         GLFW.glfwMakeContextCurrent(window);
         
         GL.createCapabilities();
-        System.out.println("OpenGL capabilities utworzone pomyślnie");
+        System.out.println("OpenGL capabilities created successfully");
         
-        // Fix dla Intel/AMD - VAO
+        // Fix for Intel/AMD - VAO
         int vao = org.lwjgl.opengl.GL30.glGenVertexArrays();
         org.lwjgl.opengl.GL30.glBindVertexArray(vao);
 
@@ -170,7 +170,7 @@ public abstract class Minecraft
             throw e;
         }
         
-        // initKeyCodes() wywołane wcześniej dla callbacków, ale tu nie zaszkodzi
+        // initKeyCodes() called earlier for callbacks, but doesn't hurt here
         RenderManager.instance.itemRenderer = new ItemRenderer(this);
         mcDataDir = getMinecraftDir();
         field_22008_V = new SaveConverterMcRegion(new File(mcDataDir, "saves"));
@@ -329,13 +329,13 @@ public abstract class Minecraft
         finally
         {
             GLFW.glfwDestroyWindow(window);
-            System.out.println("Inicjalizacja zakończona - uruchamianie gry...");
+            System.out.println("Initialization complete - starting game...");
         }
     }
 
     public void run()
     {
-        System.out.println("Wchodzę do metody run()...");
+        System.out.println("Entering run() method...");
         running = true;
         try
         {
@@ -430,14 +430,14 @@ public abstract class Minecraft
                     // Render GUI in main menu when no world is loaded
                     if(currentScreen != null && theWorld == null)
                     {
-                        // 1. Pobieramy fizyczne wymiary BUFORA (do rysowania OpenGL)
+                        // 1. Get physical BUFFER dimensions (for OpenGL drawing)
                         int[] fw = new int[1];
                         int[] fh = new int[1];
                         GLFW.glfwGetFramebufferSize(window, fw, fh);
                         int physicalWidth = fw[0];
                         int physicalHeight = fh[0];
 
-                        // 2. Pobieramy logiczne wymiary OKNA (do myszki)
+                        // 2. Get logical WINDOW dimensions (for mouse)
                         int[] ww = new int[1];
                         int[] wh = new int[1];
                         GLFW.glfwGetWindowSize(window, ww, wh);
@@ -447,24 +447,24 @@ public abstract class Minecraft
                         if (physicalWidth > 0 && physicalHeight > 0 && windowW > 0 && windowH > 0) {
                             GL11.glViewport(0, 0, physicalWidth, physicalHeight);
 
-                            // 3. Pobieramy logiczne wymiary GUI Minecrafta
+                            // 3. Get logical Minecraft GUI dimensions
                             ScaledResolution scaledresolution = new ScaledResolution(displayWidth, displayHeight);
                             int logicalWidth = scaledresolution.getScaledWidth();
                             int logicalHeight = scaledresolution.getScaledHeight();
 
-                            // --- FIX MYSZKI I SKALOWANIA ---
-                            // Pobieramy surową pozycję myszki z GLFW (w jednostkach okna)
+                            // --- MOUSE AND SCALING FIX ---
+                            // Get raw mouse position from GLFW (in window units)
                             double[] mx = new double[1];
                             double[] my = new double[1];
                             GLFW.glfwGetCursorPos(window, mx, my);
                             
-                            // Skalujemy pozycję myszki względem logicznego GUI
-                            // Używamy windowW/windowH, bo kursor jest w tych jednostkach!
+                            // Scale mouse position relative to logical GUI
+                            // We use windowW/windowH because the cursor is in these units!
                             int mouseX = (int)(mx[0] * (double)logicalWidth / (double)windowW);
                             int mouseY = (int)(my[0] * (double)logicalHeight / (double)windowH);
                             
-                            // Przekazujemy poprawne dane do helpera (dla klikania)
-                            // Helper potrzebuje wiedzieć, że jego inputy też trzeba tak skalować
+                            // Pass correct data to helper (for clicking)
+                            // Helper needs to know that its inputs must also be scaled this way
                             MouseLwjgl3Helper.setScale(windowW, windowH, logicalWidth, logicalHeight);
                             // -------------------------------
 
@@ -492,7 +492,7 @@ public abstract class Minecraft
                             GL11.glAlphaFunc(516, 0.1F);
 
                             try {
-                                // Teraz przekazujemy idealnie obliczone mouseX/mouseY
+                                // Now passing perfectly calculated mouseX/mouseY
                                 currentScreen.drawScreen(mouseX, mouseY, timer.renderPartialTicks);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -1386,31 +1386,31 @@ public abstract class Minecraft
                 loadingScreen.setLoadingProgress((i++ * 100) / j);
                 theWorld.getBlockId(chunkcoordinates.field_22395_a + k, 64, chunkcoordinates.field_22396_c + l);
                 
-                // <<< FIX 1: Zabezpieczenie przed infinite loop w oświetleniu >>>
+                // <<< FIX 1: Protection against infinite loop in lighting >>>
                 int lightingUpdates = 0;
                 while(theWorld.func_6465_g()) 
                 {
                     lightingUpdates++;
                     if(lightingUpdates > 1000) 
                     {
-                        // Przerywamy, jeśli oświetlenie mieli w miejscu
+                        // Break if lighting is stuck in place
                         break; 
                     }
                 }
-                // <<< KONIEC FIX 1 >>>
+                // <<< END FIX 1 >>>
 
-                // <<< FIX 2: Utrzymanie życia okna w LWJGL 3 >>>
-                // Bez tego system uzna aplikację za "brak odpowiedzi"
+                // <<< FIX 2: Keep window alive in LWJGL 3 >>>
+                // Without this, the system will consider the application "not responding"
                 GLFW.glfwPollEvents();
                 GLFW.glfwSwapBuffers(window);
-                // <<< KONIEC FIX 2 >>>
+                // <<< END FIX 2 >>>
             }
         }
         
-        System.out.println("Teren wygenerowany.");
+        System.out.println("Terrain generated.");
 
-        // UWAGA: Usunąłem symulację świata (theWorld.func_656_j()), 
-        // bo ona też często powoduje infinite loop w portach.
+        // NOTE: I removed world simulation (theWorld.func_656_j()), 
+        // because it also often causes infinite loops in ports.
     }
 
     public void installResource(String s, File file)
