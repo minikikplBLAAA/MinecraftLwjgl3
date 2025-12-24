@@ -40,7 +40,7 @@ If you prefer to build manually:
 
 3. Run the game:
 
-To run the game press on start_minecraft.bat
+To run the game press on start_minecraft.cmd
 
 ### Project Structure
 - `minecraft/` - Source code directory
