@@ -6,7 +6,6 @@ import java.nio.charset.Charset;
 import java.util.*;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
-// FIX: Usunięto import org.lwjgl.util.glu.GLU, bo ta biblioteka nie istnieje w LWJGL 3
 
 public class GuiMainMenu extends GuiScreen
 {
@@ -290,7 +289,7 @@ public class GuiMainMenu extends GuiScreen
 
     private static final Random rand = new Random();
     String minecraftLogo[] = {
-        " * * * * * *** *** *** *** *** ***", " ** ** * ** * * * * * * * * * ", " * * * * * * * ** * ** *** ** * ", " * * * * ** * * * * * * * * ", " * * * * * *** *** * * * * * * "
+        " *   * * *   * *** *** *** *** *** ***", " ** ** * **  * *   *   * * * * *    * ", " * * * * * * * **  *   **  *** **   * ", " *   * * *  ** *   *   * * * * *    * ", " *   * * *   * *** *** * * * * *    * "
     };
     private LogoEffectRandomizer logoEffects[][];
     private float updateCounter;
